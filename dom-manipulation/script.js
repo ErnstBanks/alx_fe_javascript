@@ -92,7 +92,18 @@ function addQuote() {
     }
 }
 
-// Other functions (showRandomQuote, exportToJson, importFromJsonFile) remain unchanged...
+// Function to show a random quote
+function showRandomQuote() {
+    if (quotes.length === 0) {
+        document.getElementById('quoteDisplay').innerHTML = '<p>No quotes available.</p>';
+        return;
+    }
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    const randomQuote = quotes[randomIndex];
+    displayQuotes([randomQuote]); // Display the random quote
+}
+
+// Other functions (exportToJson, importFromJsonFile) remain unchanged...
 
 // Event listeners
 document.getElementById('newQuote').addEventListener('click', showRandomQuote);
