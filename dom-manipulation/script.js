@@ -67,3 +67,26 @@ loadQuotes();
 
 // Periodic fetching from server
 setInterval(fetchQuotesFromServer, 30000); // Fetch new quotes every 30 seconds
+function notifyUser(message) {
+    alert(message); // Simple alert for demonstration
+}
+
+// Update the mergeQuotes function to notify users
+function mergeQuotes(serverQuotes) {
+    const newQuotes = [];
+    serverQuotes.forEach(serverQuote => {
+        const existingQuote = quotes.find(quote => quote.text === serverQuote.text);
+        if (!existingQuote) {
+            newQuotes.push(serverQuote);
+        } else {
+            // Conflict resolution: prefer server data
+            console.log(`Conflict detected for quote: "${existingQuote.text}". Updating to server version.`);
+            existingQuote.category = serverQuote.category; // Update category, if needed
+            notifyUser(`Quote "${existingQuote.text}" was updated from the server.`);
+        }
+    });
+    quotes = [...quotes, ...newQuotes]; // Add new quotes
+    saveQuotes(); // Save updated quotes to local storage
+    displayQuotes(quotes); // Display updated quotes
+}
+
