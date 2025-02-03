@@ -44,6 +44,7 @@ function mergeQuotes(serverQuotes) {
             // Conflict resolution: prefer server data
             console.log(`Conflict detected for quote: "${existingQuote.text}". Updating to server version.`);
             existingQuote.category = serverQuote.category; // Update category, if needed
+            notifyUser(`Quote "${existingQuote.text}" was updated from the server.`);
         }
     });
     quotes = [...quotes, ...newQuotes]; // Add new quotes
@@ -51,9 +52,55 @@ function mergeQuotes(serverQuotes) {
     displayQuotes(quotes); // Display updated quotes
 }
 
-// Save quotes to local storage
-function saveQuotes() {
-    localStorage.setItem('quotes', JSON.stringify(quotes));
+// Function to add a new quote and sync with server
+async function addQuote() {
+    const newQuoteText = document.getElementById('newQuoteText').value;
+    const newQuoteCategory = document.getElementById('newQuoteCategory').value;
+
+    if (newQuoteText && newQuoteCategory) {
+        const newQuote = { text: newQuoteText, category: newQuoteCategory };
+        quotes.push(newQuote);
+        saveQuotes(); // Save to local storage
+        await postQuoteToServer(newQuote); // Send new quote to server
+        populateCategories(); // Update categories dropdown
+        displayQuotes(quotes); // Show all quotes
+        document.getElementById('newQuoteText').value = ''; // Clear input
+        document.getElementById('newQuoteCategory').value = ''; // Clear input
+        alert('Quote added!');
+    } else {
+        alert('Please enter both quote and category.');
+    }
+}
+
+// Function to post a new quote to the server
+async function postQuoteToServer(quote) {
+    try {
+        const response = await fetch(serverUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                title: quote.text,
+                body: quote.category, // Using category as body for simulation
+                userId: 1 // Simulating a user ID
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const serverResponse = await response.json();
+        console.log('Quote successfully posted to server:', serverResponse);
+    } catch (error) {
+        console.error('Error posting quote to server:', error);
+    }
+}
+
+// Notify user of changes
+function notifyUser(message) {
+    alert(message); // Simple alert for demonstration
 }
 
 // Other functions remain unchanged...
@@ -67,26 +114,3 @@ loadQuotes();
 
 // Periodic fetching from server
 setInterval(fetchQuotesFromServer, 30000); // Fetch new quotes every 30 seconds
-function notifyUser(message) {
-    alert(message); // Simple alert for demonstration
-}
-
-// Update the mergeQuotes function to notify users
-function mergeQuotes(serverQuotes) {
-    const newQuotes = [];
-    serverQuotes.forEach(serverQuote => {
-        const existingQuote = quotes.find(quote => quote.text === serverQuote.text);
-        if (!existingQuote) {
-            newQuotes.push(serverQuote);
-        } else {
-            // Conflict resolution: prefer server data
-            console.log(`Conflict detected for quote: "${existingQuote.text}". Updating to server version.`);
-            existingQuote.category = serverQuote.category; // Update category, if needed
-            notifyUser(`Quote "${existingQuote.text}" was updated from the server.`);
-        }
-    });
-    quotes = [...quotes, ...newQuotes]; // Add new quotes
-    saveQuotes(); // Save updated quotes to local storage
-    displayQuotes(quotes); // Display updated quotes
-}
-
