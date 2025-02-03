@@ -9,12 +9,19 @@ function loadQuotes() {
     }
     populateCategories(); // Populate categories on load
     restoreLastFilter(); // Restore last selected filter
-    fetchQuotesFromServer(); // Fetch initial quotes from the server
+    syncQuotes(); // Sync quotes with the server
 }
 
 // Simulating server interaction
 const serverUrl = 'https://jsonplaceholder.typicode.com/posts'; // Mock API URL
 
+// Function to sync quotes with the server
+async function syncQuotes() {
+    await fetchQuotesFromServer(); // Fetch quotes from server
+    saveQuotes(); // Save current quotes to local storage
+}
+
+// Fetch quotes from the server
 async function fetchQuotesFromServer() {
     try {
         const response = await fetch(serverUrl);
@@ -60,7 +67,6 @@ async function addQuote() {
     if (newQuoteText && newQuoteCategory) {
         const newQuote = { text: newQuoteText, category: newQuoteCategory };
         quotes.push(newQuote);
-        saveQuotes(); // Save to local storage
         await postQuoteToServer(newQuote); // Send new quote to server
         populateCategories(); // Update categories dropdown
         displayQuotes(quotes); // Show all quotes
@@ -112,5 +118,5 @@ document.getElementById('addQuoteBtn').addEventListener('click', addQuote);
 // Load quotes and categories when the page loads
 loadQuotes();
 
-// Periodic fetching from server
-setInterval(fetchQuotesFromServer, 30000); // Fetch new quotes every 30 seconds
+// Periodic syncing
+setInterval(syncQuotes, 30000); // Sync quotes every 30 seconds
