@@ -59,6 +59,11 @@ function mergeQuotes(serverQuotes) {
     displayQuotes(quotes); // Display updated quotes
 }
 
+// Save quotes to local storage
+function saveQuotes() {
+    localStorage.setItem('quotes', JSON.stringify(quotes)); // Explicitly using localStorage.setItem
+}
+
 // Function to add a new quote and sync with server
 async function addQuote() {
     const newQuoteText = document.getElementById('newQuoteText').value;
