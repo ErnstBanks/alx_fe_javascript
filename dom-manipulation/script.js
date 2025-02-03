@@ -19,6 +19,7 @@ const serverUrl = 'https://jsonplaceholder.typicode.com/posts'; // Mock API URL
 async function syncQuotes() {
     await fetchQuotesFromServer(); // Fetch quotes from server
     saveQuotes(); // Save current quotes to local storage
+    notifyUser('Quotes synced with server!'); // Notify user of successful sync
 }
 
 // Fetch quotes from the server
